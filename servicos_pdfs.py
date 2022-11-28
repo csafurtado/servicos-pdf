@@ -1,5 +1,6 @@
 # Script que executa determinadas funções para PDF
-import pdf2image, os
+# import pdf2image
+import os
 from PyPDF2 import PdfFileReader, PdfFileWriter
 from tkinter import *
 from tkinter import filedialog, messagebox
@@ -14,7 +15,7 @@ def abre_janela_principal():
     ### Função para abrir janela de escolha de arquivo PDF
     def abrir_arquivo():
         dir_filename =  filedialog.askopenfilename(initialdir=".", title="Escolha o PDF", filetypes=(("PDF files","*.pdf"),("All files", "*.*")))
-        label_arq_escolhido["text"] = os.path.basename(dir_filename) if len(dir_filename) else "Nenhum arquivo escolhido"
+        label_arq_escolhido["text"] = dir_filename if len(dir_filename) else "Nenhum arquivo escolhido"
     
     # Instancia a janela e a customiza
     j_principal = Tk()
@@ -26,7 +27,7 @@ def abre_janela_principal():
 
     # Coloca os botões das funções na janela e os organiza posicionalmente
     botao_escolher_arquivo = Button(j_principal, command=abrir_arquivo, text="Escolher arquivo", bg=cor_fundo_janela, fg="white")
-    botao_slice = Button(j_principal, command= lambda: abre_janela_slice(j_principal, os.path.abspath(label_arq_escolhido["text"])), text="Corte de páginas", height=2, width=14, cursor='dot')
+    botao_slice = Button(j_principal, command= lambda: abre_janela_slice(j_principal, os.path.abspath(label_arq_escolhido["text"])), text="Corte de páginas", height=2, width=14, cursor='dot') #ERRO aqui
     botao_transformar_pdf_em_img = Button(j_principal, text="PDF para JPG", height=2, width=14, cursor="dot")
 
     botao_escolher_arquivo.place(relx=0.40, rely=0.25)
@@ -36,6 +37,7 @@ def abre_janela_principal():
     # Define textos(labels) a serem mostrados e define sua organização
     label_arq_escolhido = Label(j_principal, text="Nenhum arquivo escolhido", font=('Helvetica 10 bold'), fg="white", bg=cor_fundo_janela)
     label_arq_escolhido.place(relx=.5, rely=.15, anchor=CENTER)
+    # label_gambiarra_invisivel =
 
     j_principal.mainloop()
 
@@ -77,8 +79,8 @@ def abre_janela_slice(j_principal, fonte_arq_pdf):
 
     label_lim_inferior.place(relx=0.1, rely=0.4)
     label_lim_superior.place(relx=0.1, rely=0.2)
-    campo_lim_inferior.place(relx=0.2, rely=0.4)
-    campo_lim_superior.place(relx=0.2, rely=0.2)
+    campo_lim_inferior.place(relx=0.2, rely=0.2)
+    campo_lim_superior.place(relx=0.2, rely=0.4)
 
     # Botão de executar o corte
     botao_executar_slice = Button(janela_base, text="Cortar", width=10, height=5, command= lambda: faz_slice_paginas_pdf(fonte_arq_pdf, campo_lim_inferior.get(), campo_lim_superior.get()))
@@ -103,18 +105,25 @@ def faz_slice_paginas_pdf(fonte_arq_pdf, limite_inf, limite_sup):
         messagebox.showwarning("ERRO","Valor dos campos devem ser números e não podem estar vazios!")
         return
 
+    finally:
+        if limite_inf > limite_sup or limite_inf <= 0:
+            messagebox.showwarning("ERRO","Verifique se os numeros colocados estão dentro da quantidade de páginas que o PDF possui!")
+            return
 
-    with open(fonte_arq_pdf, 'rb') as infile:
-        # Cria o leitor (que recebe o arquivo PDF) e o escritor de arquivo PDF (que irá gerar um novo PDF)
-        reader = PdfFileReader(infile)
-        writer = PdfFileWriter()
 
-        with open(f'{nome_arquivo}_{limite_inf}_a_{limite_sup}.pdf', 'wb') as outfile:
-            for i in range(limite_inf-1, limite_sup):
-                writer.addPage(reader.getPage(i))
-                writer.write(outfile)
+        with open(fonte_arq_pdf, 'rb') as infile:
+            # Cria o leitor (que recebe o arquivo PDF) e o escritor de arquivo PDF (que irá gerar um novo PDF)
+            reader = PdfFileReader(infile)
 
-    pass
+            if reader.numPages < limite_sup or reader.numPages < limite_inf:
+                messagebox.showwarning("ERRO","Verifique se os numeros colocados estão dentro da quantidade de páginas que o PDF possui!")
+            writer = PdfFileWriter()
+
+            with open(f'{nome_arquivo}_{limite_inf}_a_{limite_sup}.pdf', 'wb') as outfile:
+                for i in range(limite_inf-1, limite_sup):
+                    writer.addPage(reader.getPage(i))
+                    writer.write(outfile)
+
 
 def transforma_img_em_pdf(img_fonte):
     pass
@@ -138,3 +147,12 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+"""
+# OBS:
+
+SLICE
+-> Para cada erro no corte de páginas, uma janela nova da função é aberta
+-> A lógica para verificar erros dentro dos intervalos dados de corte ainda está furada
+"""
