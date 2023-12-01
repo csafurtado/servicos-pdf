@@ -7,7 +7,7 @@ from tkinter import filedialog, messagebox
 
 
 # Algumas variaveis globais
-# poppler_path = r'C:\Users\cristian.csaf\Desktop\RIT\extras'
+
 
 # Função da janela principal do programa
 def abre_janela_principal():
@@ -101,28 +101,31 @@ def faz_slice_paginas_pdf(fonte_arq_pdf, limite_inf, limite_sup):
         limite_inf = int(limite_inf)
         limite_sup = int(limite_sup)
 
-    except ValueError:
-        messagebox.showwarning("ERRO","Valor dos campos devem ser números e não podem estar vazios!")
-        return
-
-    finally:
         if limite_inf > limite_sup or limite_inf <= 0:
             messagebox.showwarning("ERRO","Verifique se os numeros colocados estão dentro da quantidade de páginas que o PDF possui!")
             return
-
-
+        
         with open(fonte_arq_pdf, 'rb') as infile:
             # Cria o leitor (que recebe o arquivo PDF) e o escritor de arquivo PDF (que irá gerar um novo PDF)
             reader = PdfFileReader(infile)
 
             if reader.numPages < limite_sup or reader.numPages < limite_inf:
                 messagebox.showwarning("ERRO","Verifique se os numeros colocados estão dentro da quantidade de páginas que o PDF possui!")
+                return
+            
             writer = PdfFileWriter()
 
             with open(f'{nome_arquivo}_{limite_inf}_a_{limite_sup}.pdf', 'wb') as outfile:
                 for i in range(limite_inf-1, limite_sup):
                     writer.addPage(reader.getPage(i))
                     writer.write(outfile)
+
+    except ValueError:
+        messagebox.showwarning("ERRO","Valor dos campos devem ser números e não podem estar vazios!")
+        return
+
+
+
 
 
 def transforma_img_em_pdf(img_fonte):
@@ -154,5 +157,4 @@ if __name__ == "__main__":
 
 SLICE
 -> Para cada erro no corte de páginas, uma janela nova da função é aberta
--> A lógica para verificar erros dentro dos intervalos dados de corte ainda está furada
 """
