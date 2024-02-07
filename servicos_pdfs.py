@@ -1,13 +1,10 @@
 # Script que executa determinadas funções para PDF
 # import pdf2image
 import os
-from PyPDF2 import PdfFileReader, PdfFileWriter
 from tkinter import *
 from tkinter import filedialog, messagebox
 
-
-# Algumas variaveis globais
-# poppler_path = r'C:\Users\cristian.csaf\Desktop\RIT\extras'
+from PDFManipulator import PDFManipulator
 
 # Função da janela principal do programa
 def abre_janela_principal():
@@ -16,7 +13,7 @@ def abre_janela_principal():
     def abrir_arquivo():
         dir_filename =  filedialog.askopenfilename(initialdir=".", title="Escolha o PDF", filetypes=(("PDF files","*.pdf"),("All files", "*.*")))
         label_arq_escolhido["text"] = dir_filename if len(dir_filename) else "Nenhum arquivo escolhido"
-    
+
     # Instancia a janela e a customiza
     j_principal = Tk()
     j_principal.title("Serviços de PDF ao seu dispor")
@@ -62,6 +59,8 @@ def abre_janela_slice(j_principal, fonte_arq_pdf):
     if os.path.basename(fonte_arq_pdf) == "Nenhum arquivo escolhido" or fonte_arq_pdf.split(".")[-1] != "pdf":
         messagebox.showwarning("ATENCAO", "Escolha um arquivo PDF válido para aplicar alguma função!")
         return
+    
+    manipuladorPDF = PDFManipulator(fonte_arq_pdf)
 
     # Cria janela que tem como pai a janela principal e define suas propriedades
     janela_base = Toplevel(j_principal)     
@@ -70,6 +69,7 @@ def abre_janela_slice(j_principal, fonte_arq_pdf):
     janela_base.resizable(False, False)
     cor_fundo_janela = "#383fb8"
     janela_base.configure(bg=cor_fundo_janela, takefocus=True)
+    janela_base.grab_set()
     
     # Labels e caixas de entrada
     label_lim_superior = Label(janela_base, text="De:", fg="white", bg=cor_fundo_janela, font=('Helvetica 10 bold'))
@@ -83,7 +83,7 @@ def abre_janela_slice(j_principal, fonte_arq_pdf):
     campo_lim_superior.place(relx=0.2, rely=0.4)
 
     # Botão de executar o corte
-    botao_executar_slice = Button(janela_base, text="Cortar", width=10, height=5, command= lambda: faz_slice_paginas_pdf(fonte_arq_pdf, campo_lim_inferior.get(), campo_lim_superior.get()))
+    botao_executar_slice = Button(janela_base, text="Cortar", width=10, height=5, command= lambda: manipuladorPDF.faz_slice_paginas_pdf(fonte_arq_pdf, campo_lim_inferior.get(), campo_lim_superior.get()))
     botao_executar_slice.place(relx=0.7, rely=0.35)
     # Executa duas funções quando se clica no 'X' desta janela de slice
     # janela_base.protocol('WM_DELETE_WINDOW', func= lambda: faz_bloqueio_janela(1, j_principal))       
@@ -91,46 +91,8 @@ def abre_janela_slice(j_principal, fonte_arq_pdf):
     janela_base.mainloop()
     pass
 
-
-# Funções para manipular o PDF escolhido
-## Corta de i até j das páginas de um pdf
-def faz_slice_paginas_pdf(fonte_arq_pdf, limite_inf, limite_sup):
-    nome_arquivo = os.path.basename(fonte_arq_pdf).split(".pdf")[0]
-
-    try:
-        limite_inf = int(limite_inf)
-        limite_sup = int(limite_sup)
-
-    except ValueError:
-        messagebox.showwarning("ERRO","Valor dos campos devem ser números e não podem estar vazios!")
-        return
-
-    finally:
-        if limite_inf > limite_sup or limite_inf <= 0:
-            messagebox.showwarning("ERRO","Verifique se os numeros colocados estão dentro da quantidade de páginas que o PDF possui!")
-            return
-
-
-        with open(fonte_arq_pdf, 'rb') as infile:
-            # Cria o leitor (que recebe o arquivo PDF) e o escritor de arquivo PDF (que irá gerar um novo PDF)
-            reader = PdfFileReader(infile)
-
-            if reader.numPages < limite_sup or reader.numPages < limite_inf:
-                messagebox.showwarning("ERRO","Verifique se os numeros colocados estão dentro da quantidade de páginas que o PDF possui!")
-            writer = PdfFileWriter()
-
-            with open(f'{nome_arquivo}_{limite_inf}_a_{limite_sup}.pdf', 'wb') as outfile:
-                for i in range(limite_inf-1, limite_sup):
-                    writer.addPage(reader.getPage(i))
-                    writer.write(outfile)
-
-
-def transforma_img_em_pdf(img_fonte):
-    pass
-
 # Fluxo principal
 def main():
-
     abre_janela_principal()
 
     # Escolher qual função executar
@@ -142,9 +104,6 @@ def main():
 
     pass
 
-
-
-
 if __name__ == "__main__":
     main()
 
@@ -155,4 +114,11 @@ if __name__ == "__main__":
 SLICE
 -> Para cada erro no corte de páginas, uma janela nova da função é aberta
 -> A lógica para verificar erros dentro dos intervalos dados de corte ainda está furada
+
+FUNCOES:
+
+-> Cortar slides de x página a y página dentro do intervalo de n páginas que um pdf tem
+-> Transformar um ou mais jpgs em pdf
+-> Transformar um pdf em jpg (em mais imagens se tiver mais páginas)
+
 """

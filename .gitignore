@@ -1,2 +1,4 @@
+servicosVenv
 /teste
 *.pdf
+__pycache__
