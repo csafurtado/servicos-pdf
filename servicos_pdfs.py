@@ -4,14 +4,14 @@ import os
 from tkinter import *
 from tkinter import filedialog, messagebox
 
-from PDFManipulator import PDFManipulator
+from manipulators import PDFManipulator, ImageManipulator
 
 # Função da janela principal do programa
 def abre_janela_principal():
     ## Funções para a janela
     ### Função para abrir janela de escolha de arquivo PDF
     def abrir_arquivo():
-        dir_filename =  filedialog.askopenfilename(initialdir=".", title="Escolha o PDF", filetypes=(("PDF files","*.pdf"),("All files", "*.*")))
+        dir_filename =  filedialog.askopenfilename(initialdir=".", title="Escolha o PDF", filetypes=(("PDF files","*.pdf"),("Image Files",["*.jpg","*.jpeg","*.png"]),("All files", "*.*")))
         label_arq_escolhido["text"] = dir_filename if len(dir_filename) else "Nenhum arquivo escolhido"
 
     # Instancia a janela e a customiza
@@ -24,8 +24,8 @@ def abre_janela_principal():
 
     # Coloca os botões das funções na janela e os organiza posicionalmente
     botao_escolher_arquivo = Button(j_principal, command=abrir_arquivo, text="Escolher arquivo", bg=cor_fundo_janela, fg="white")
-    botao_slice = Button(j_principal, command= lambda: abre_janela_slice(j_principal, os.path.abspath(label_arq_escolhido["text"])), text="Corte de páginas", height=2, width=14, cursor='dot') #ERRO aqui
-    botao_transformar_pdf_em_img = Button(j_principal, text="PDF para JPG", height=2, width=14, cursor="dot")
+    botao_slice = Button(j_principal, command= lambda: abre_janela_slice(j_principal, os.path.abspath(label_arq_escolhido["text"])), text="Cortar PDF", height=2, width=14, cursor='dot')
+    botao_transformar_pdf_em_img = Button(j_principal, command= lambda: abrir_janela_transforma_img_em_pdf(os.path.abspath(label_arq_escolhido["text"])), text="Imagem para PDF", height=2, width=14, cursor="dot")
 
     botao_escolher_arquivo.place(relx=0.40, rely=0.25)
     botao_slice.place(relx=0.1, rely=0.7)
@@ -57,7 +57,7 @@ def abre_janela_slice(j_principal, fonte_arq_pdf):
     # Bloqueia os widgets da janela principal, permitindo
     # faz_bloqueio_janela(0, j_principal)
     if os.path.basename(fonte_arq_pdf) == "Nenhum arquivo escolhido" or fonte_arq_pdf.split(".")[-1] != "pdf":
-        messagebox.showwarning("ATENCAO", "Escolha um arquivo PDF válido para aplicar alguma função!")
+        messagebox.showwarning("ATENCAO", "Escolha um arquivo PDF válido!")
         return
     
     manipuladorPDF = PDFManipulator(fonte_arq_pdf)
@@ -83,7 +83,7 @@ def abre_janela_slice(j_principal, fonte_arq_pdf):
     campo_lim_superior.place(relx=0.2, rely=0.4)
 
     # Botão de executar o corte
-    botao_executar_slice = Button(janela_base, text="Cortar", width=10, height=5, command= lambda: manipuladorPDF.faz_slice_paginas_pdf(fonte_arq_pdf, campo_lim_inferior.get(), campo_lim_superior.get()))
+    botao_executar_slice = Button(janela_base, text="Cortar", width=10, height=5, command= lambda: manipuladorPDF.faz_slice_paginas_pdf(campo_lim_inferior.get(), campo_lim_superior.get()))
     botao_executar_slice.place(relx=0.7, rely=0.35)
     # Executa duas funções quando se clica no 'X' desta janela de slice
     # janela_base.protocol('WM_DELETE_WINDOW', func= lambda: faz_bloqueio_janela(1, j_principal))       
@@ -91,13 +91,21 @@ def abre_janela_slice(j_principal, fonte_arq_pdf):
     janela_base.mainloop()
     pass
 
+def abrir_janela_transforma_img_em_pdf(fonte_img):
+    # Bloqueia os widgets da janela principal, permitindo
+    # faz_bloqueio_janela(0, j_principal)
+
+    print(fonte_img, fonte_img.split(".")[-1], fonte_img.split(".")[-1] not in ["jpg", "jpeg", "png"])
+    if os.path.basename(fonte_img) == "Nenhum arquivo escolhido" or fonte_img.split(".")[-1] not in ["jpg", "jpeg", "png"]:
+        messagebox.showwarning("ATENCAO", "Escolha um arquivo de imagem válido!")
+        return
+    
+    manipuladorImagem = ImageManipulator(fonte_img)
+    manipuladorImagem.transforma_img_em_pdf()
+
 # Fluxo principal
 def main():
     abre_janela_principal()
-
-    # Escolher qual função executar
-    # faz_slice_paginas_pdf(r"C:\Users\cristian.csaf\Desktop\tabela_medicoes_zoch\medicoes_atuais\medicao_57.pdf", 134, 140)
-
 
     # CASO TRANSFORMAR IMG EM PDF:
     ## Definir o caminho da imagem desejada e aplicar para transformar em PDF
@@ -117,7 +125,7 @@ SLICE
 
 FUNCOES:
 
--> Cortar slides de x página a y página dentro do intervalo de n páginas que um pdf tem
+-> (OK) Cortar slides de x página a y página dentro do intervalo de n páginas que um pdf tem
 -> Transformar um ou mais jpgs em pdf
 -> Transformar um pdf em jpg (em mais imagens se tiver mais páginas)
 
