@@ -11,6 +11,7 @@ class PDFManipulator:
     def __init__(self, path):
         self.path = path
         self.pdf = PdfReader(path)
+        self.qtd_paginas = len(self.pdf.pages)
 
     # Funções para manipular o PDF escolhido
         
@@ -23,9 +24,10 @@ class PDFManipulator:
             limite_inf = int(limite_inf) 
             limite_sup = int(limite_sup)
 
-            if limite_inf > limite_sup or limite_inf <= 0 or len(self.pdf.pages) < limite_sup or len(self.pdf.pages) < limite_inf or limite_inf is None or limite_sup is None:
+            if limite_inf > limite_sup or limite_inf <= 0 or self.qtd_paginas < limite_sup or self.qtd_paginas < limite_inf or limite_inf is None or limite_sup is None:
                 messagebox.showwarning("ERRO","Verifique se os numeros colocados estão dentro da quantidade de páginas que o PDF possui!")
                 return
+            
             writer = PdfWriter()
 
             with open(f'{nome_arquivo}_{limite_inf}_a_{limite_sup}.pdf', 'wb') as outfile:

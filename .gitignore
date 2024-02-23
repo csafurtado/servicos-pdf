@@ -1,4 +1,8 @@
 servicosVenv
 /teste
 *.pdf
+teste.css
 __pycache__
+*.spec
+build
+dist
