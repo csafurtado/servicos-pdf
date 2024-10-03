@@ -1,4 +1,9 @@
-servicosVenv
+.venv
 /teste
 *.pdf
+
+*.png
+*.jpg
+*.jpeg
+
 __pycache__
