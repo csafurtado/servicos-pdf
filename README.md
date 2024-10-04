@@ -10,10 +10,11 @@ Cansado de ter que acessar a internet para cortar um PDF ou transformar uma imag
 
 * Ao concluir o passo anterior, é preciso instalar as bibliotecas necessárias do projeto através do comando `pip install -r requirements.txt`.
 
-* Terminado isso, basta executar a aplicação através do comando `python3 servicos_pdf.py` e ser feliz!
+* Terminado isso, basta executar a aplicação através do comando `python3 main.py` e ser feliz!
 
 
 | Modificação | Data |
 |----- | ----- |
 | Criação do documento | 07/02/2024 |
-| Adiciona ambiente linux para configuração e muda versão do Python | 07/02/2024 |
+| Adiciona ambiente linux para configuração e muda versão do Python | 03/10/2024 |
+| Muda nome do arquivo para iniciar programa | 04/10/2024 |

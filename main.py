@@ -1,4 +1,4 @@
-from janela_grafica import abre_janela_principal
+from janelas_graficas.janela_principal import abre_janela_principal
 
 
 # Início do programa
