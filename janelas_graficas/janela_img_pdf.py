@@ -1,5 +1,5 @@
 import os
-from PDFManipulator import PDFManipulator  # Assumindo que está no mesmo diretório ou é um módulo importável
+from models.PDFManipulator import PDFManipulator  # Assumindo que está no mesmo diretório ou é um módulo importável
 from tkinter import *
 from tkinter import filedialog, messagebox
 

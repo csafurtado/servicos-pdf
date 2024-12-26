@@ -4,7 +4,7 @@ from janelas_graficas.janela_corte_pdf import inicia_janela_corte
 from janelas_graficas.janela_img_pdf import inicia_janela_img_para_pdf
 from janelas_graficas.janela_juntar_pdfs import inicia_janela_juntar_pdfs
 
-from PDFManipulator import PDFManipulator  # Assumindo que está no mesmo diretório ou é um módulo importável
+from models.PDFManipulator import PDFManipulator  # Assumindo que está no mesmo diretório ou é um módulo importável
 
 # Função da janela principal
 def abre_janela_principal(frase_diaria=None):

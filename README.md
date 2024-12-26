@@ -10,6 +10,8 @@ Cansado de ter que acessar a internet para cortar um PDF ou transformar uma imag
 
 * Ao concluir o passo anterior, é preciso instalar as bibliotecas necessárias do projeto através do comando `pip install -r requirements.txt`.
 
+* Duplicar o arquivo ".example.env" com a cópia com o nome ".env"
+
 * Terminado isso, basta executar a aplicação através do comando `python3 main.py` e ser feliz!
 
 
